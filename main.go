@@ -158,9 +158,13 @@ func realityPublicKey(data []byte) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("derive Reality public key: %w", err)
 	}
+	return parsePublicKey(string(output))
+}
+
+func parsePublicKey(output string) (string, error) {
 	for _, line := range strings.Split(string(output), "\n") {
 		parts := strings.SplitN(line, ":", 2)
-		if len(parts) == 2 && (parts[0] == "Password" || parts[0] == "PublicKey" || parts[0] == "Public key") {
+		if len(parts) == 2 && (strings.Contains(parts[0], "Password") || strings.Contains(parts[0], "PublicKey") || strings.Contains(parts[0], "Public key")) {
 			return strings.TrimSpace(parts[1]), nil
 		}
 	}

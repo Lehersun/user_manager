@@ -65,3 +65,14 @@ func TestConnectionStringUsesRealitySettings(t *testing.T) {
 		t.Fatalf("got %q, want %q", got, want)
 	}
 }
+
+func TestParsePublicKeyAcceptsXrayPasswordLabel(t *testing.T) {
+	output := "PrivateKey: private\nPassword (PublicKey): public-key\nHash32: hash\n"
+	got, err := parsePublicKey(output)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got != "public-key" {
+		t.Fatalf("got %q", got)
+	}
+}
