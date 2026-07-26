@@ -45,3 +45,23 @@ func TestAddClientRejectsDuplicateName(t *testing.T) {
 		t.Fatal("expected duplicate name error")
 	}
 }
+
+func TestConnectionStringUsesRealitySettings(t *testing.T) {
+	config := []byte(`{
+		"inbounds": [{
+			"port": 27015,
+			"protocol": "vless",
+			"settings": {"clients": [{"id":"client-id","email":"alice","flow":"xtls-rprx-vision"}]},
+			"streamSettings": {"security":"reality","realitySettings":{"privateKey":"private","shortIds":["short-id"],"serverNames":["www.cloudflare.com"]}}
+		}]
+	}`)
+
+	got, err := connectionString(config, "client-id", "178.83.123.153", "public-key")
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := "vless://client-id@178.83.123.153:27015?encryption=none&flow=xtls-rprx-vision&security=reality&sni=www.cloudflare.com&fp=chrome&pbk=public-key&sid=short-id&type=tcp&headerType=none#alice"
+	if got != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
+}
